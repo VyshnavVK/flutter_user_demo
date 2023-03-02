@@ -36,8 +36,9 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scrollController = ScrollController();
     return BlocProvider(
-      create: (context) => UserBloc(
+      create: (context) => UserListBloc(
         RepositoryProvider.of<Repository>(context),
       )..add(UserLoadingEvent()),
       child: Scaffold(
@@ -45,14 +46,18 @@ class MyHomePage extends StatelessWidget {
         appBar: AppBar(
           title: const Text("Users List"),
         ),
-        body: BlocBuilder<UserBloc, UserState>(
+        body: BlocBuilder<UserListBloc, UserState>(
           builder: (context, state) {
             if (state is UserLoadingState) {
               return const Center(
                 child: CircularProgressIndicator(),
               );
             }
+            scrollController.addListener(() {
+              if (scrollController.position.pixels == scrollController.position.maxScrollExtent) {
 
+              }
+            });
             if (state is UserLoadedState) {
               List<UserModel> list = state.users;
               return ListView.builder(
@@ -65,7 +70,7 @@ class MyHomePage extends StatelessWidget {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) =>
-                                  DetailsPage(user: list[index]),
+                                  DetailsPage(id: list[index].id!),
                             ),
                           );
                         },

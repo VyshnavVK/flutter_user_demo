@@ -1,15 +1,17 @@
 import 'package:blur/blur.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_bloc_demo/blocs/UserDetails/user_details_events.dart';
+import 'package:flutter_bloc_demo/blocs/UserDetails/user_details_states.dart';
+import 'package:flutter_bloc_demo/blocs/app_blocs.dart';
+import 'package:flutter_bloc_demo/models/UserDetailsModel.dart';
 
-import '../models/UserModel.dart';
+import '../repos/Repository.dart';
 
 class DetailsPage extends StatelessWidget {
-  const DetailsPage({
-    super.key,
-    required this.user,
-  });
+  const DetailsPage({super.key, required this.id});
 
-  final UserModel user;
+  final int id;
 
   @override
   Widget build(BuildContext context) {
@@ -17,61 +19,100 @@ class DetailsPage extends StatelessWidget {
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
     var screenSize = MediaQuery.maybeOf(context)!.size;
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        title: Text("${user.firstName} ${user.lastName}"),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Stack(
-              children: [
-                Blur(
-                  blur: 6.5,
-                  blurColor: const Color.fromARGB(255, 0, 0, 0),
-                  child: AspectRatio(
-                      aspectRatio: 16 / 7,
-                      child: Image(
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                        image: NetworkImage(user.avatar!),
-                      )),
-                ),
-                Center(
-                  child: Padding(
-                      padding: EdgeInsets.only(
-                        top: screenSize.width * 0.2,
-                      ),
-                      child: CircleAvatar(
-                        backgroundColor: Colors.black38,
-                        radius: screenSize.width * 0.18,
-                        child: CircleAvatar(
-                          backgroundImage: NetworkImage(user.avatar!),
-                          radius: screenSize.width * 0.15,
-                        ),
-                      )),
-                ),
-              ],
+    return RepositoryProvider(
+      create: (context)=>Repository(),
+      child: BlocProvider(
+          create: (context) => UserDetailsBloc(
+                RepositoryProvider.of<Repository>(context),
+              )..add(UserDetailsLoadingEvent(id: id)),
+          child: Scaffold(
+            backgroundColor: Colors.black,
+            appBar: AppBar(
+              title: const Text("User Details"),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20),
-              child: Text(
-                "${user.firstName} ${user.lastName}",
-                style: const TextStyle(color: Colors.white, fontSize: 25),
-              ),
-            ),
-            const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20,vertical: 10),
-                child: Text(
-                  fillerText,
-                  style: TextStyle(color: Colors.grey),
-                )),
+            body: BlocBuilder<UserDetailsBloc, UserDetailsState>(
+              builder: (context, state) {
+                if (state is UserDetailsLoadingState) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
 
-          ],
-        ),
-      ),
+                if (state is UserDetailsLoadedState) {
+                  UserDetailsModel? user = state.user;
+                  return SingleChildScrollView(
+                      child: Column(
+                    children: [
+                      Stack(
+                        children: [
+                          Blur(
+                            blur: 6.5,
+                            blurColor: const Color.fromARGB(255, 0, 0, 0),
+                            child: AspectRatio(
+                                aspectRatio: 16 / 7,
+                                child: Image(
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  image: NetworkImage(user.avatar!),
+                                )),
+                          ),
+                          Center(
+                            child: Padding(
+                                padding: EdgeInsets.only(
+                                  top: screenSize.width * 0.2,
+                                ),
+                                child: CircleAvatar(
+                                  backgroundColor: Colors.black38,
+                                  radius: screenSize.width * 0.18,
+                                  child: CircleAvatar(
+                                    backgroundImage: NetworkImage(user.avatar!),
+                                    radius: screenSize.width * 0.15,
+                                  ),
+                                )),
+                          ),
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        child: Text(
+                          "${user.firstName} ${user.lastName}",
+                          style:
+                              const TextStyle(color: Colors.white, fontSize: 25),
+                        ),
+                      ),
+                      Padding(
+                          padding:
+                          const EdgeInsets.fromLTRB(20,0,20,20),
+                          child: Text(
+                            "Email: ${user.email}",
+                            style: const TextStyle(color: Colors.grey,fontSize: 20),
+                          )),
+                      const Padding(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                          child: Text(
+                            fillerText,
+                            style: TextStyle(color: Colors.grey),
+                          )),
+
+                    ],
+                  ));
+                }
+
+                if (state is UserDetailsLoadingStateError) {
+                  return const Center(
+                    child: Center(
+                        child: Text(
+                      "Error Occurred!",
+                      style: TextStyle(color: Colors.white),
+                    )),
+                  );
+                }
+
+                return Container();
+              },
+            ),
+          )),
     );
   }
-
 }

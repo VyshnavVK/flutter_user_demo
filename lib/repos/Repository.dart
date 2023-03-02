@@ -6,6 +6,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc_demo/models/UserModel.dart';
 
+import '../models/UserDetailsModel.dart';
+
 
 class Repository{
 
@@ -27,4 +29,15 @@ class Repository{
     throw Exception(response.statusMessage);
   }
 }
+
+
+  Future<UserDetailsModel> getDetailsUser(int id) async{
+    Response response = await dio.get("users/$id");
+    if(response.statusCode == 200){
+      final  data = response.data['data'];
+      return UserDetailsModel.fromJson(data);
+    }else{
+      throw Exception(response.statusMessage);
+    }
+  }
 }
