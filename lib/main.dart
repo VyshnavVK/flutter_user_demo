@@ -7,10 +7,8 @@ import 'package:flutter_bloc_demo/blocs/User/user_states.dart';
 import 'package:flutter_bloc_demo/models/UserModel.dart';
 import 'package:flutter_bloc_demo/repos/Repository.dart';
 import 'package:flutter_bloc_demo/screens/DetailsPage.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 void main() async{
-  await ScreenUtil.ensureScreenSize();
   runApp(const MyApp());
 }
 
@@ -59,7 +57,7 @@ class MyHomePage extends StatelessWidget {
                   itemCount: list.length,
                   itemBuilder: (_, index) {
                     return Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10.w),
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: InkWell(
                         onTap: () {
                           Navigator.of(context).push(
@@ -72,7 +70,7 @@ class MyHomePage extends StatelessWidget {
                         child: Card(
                           color: Colors.white10,
                           elevation: 4,
-                          margin:  EdgeInsets.symmetric(vertical: 5.h),
+                          margin:  const EdgeInsets.symmetric(vertical: 5),
                           child: ListTile(
                             title: Text(
                               "${list[index].firstName} ${list[index].lastName}",
