@@ -1,5 +1,4 @@
-import 'package:blur/blur.dart';
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_bloc_demo/blocs/app_blocs.dart';
@@ -8,8 +7,10 @@ import 'package:flutter_bloc_demo/blocs/User/user_states.dart';
 import 'package:flutter_bloc_demo/models/UserModel.dart';
 import 'package:flutter_bloc_demo/repos/Repository.dart';
 import 'package:flutter_bloc_demo/screens/DetailsPage.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-void main() {
+void main() async{
+  await ScreenUtil.ensureScreenSize();
   runApp(const MyApp());
 }
 
@@ -36,7 +37,6 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scrollController = ScrollController();
     return BlocProvider(
       create: (context) => UserListBloc(
         RepositoryProvider.of<Repository>(context),
@@ -53,18 +53,13 @@ class MyHomePage extends StatelessWidget {
                 child: CircularProgressIndicator(),
               );
             }
-            scrollController.addListener(() {
-              if (scrollController.position.pixels == scrollController.position.maxScrollExtent) {
-
-              }
-            });
             if (state is UserLoadedState) {
               List<UserModel> list = state.users;
               return ListView.builder(
                   itemCount: list.length,
                   itemBuilder: (_, index) {
                     return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      padding: EdgeInsets.symmetric(horizontal: 10.w),
                       child: InkWell(
                         onTap: () {
                           Navigator.of(context).push(
@@ -77,7 +72,7 @@ class MyHomePage extends StatelessWidget {
                         child: Card(
                           color: Colors.white10,
                           elevation: 4,
-                          margin: const EdgeInsets.symmetric(vertical: 5),
+                          margin:  EdgeInsets.symmetric(vertical: 5.h),
                           child: ListTile(
                             title: Text(
                               "${list[index].firstName} ${list[index].lastName}",

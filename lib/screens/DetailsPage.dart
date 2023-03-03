@@ -123,7 +123,7 @@ class DetailsPage extends StatelessWidget {
                             const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
                         child: Text(
                           fillerText,
-                          style: TextStyle(color: Colors.grey,fontSize: screenSize.width*0.042),
+                          style: TextStyle(color: Colors.grey,fontSize: screenSize.width*0.035),
                         ),
                       ),
                     ],
