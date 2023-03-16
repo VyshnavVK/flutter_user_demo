@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
       ),
       home: RepositoryProvider(
         create: (context) => Repository(),
-        child: const MyHomePage(),
+        child:  MyHomePage1(),
       ),
     );
   }
@@ -104,5 +104,76 @@ class MyHomePage extends StatelessWidget {
     );
   }
 }
+
+class MyHomePage1 extends StatefulWidget{
+  @override
+  State<StatefulWidget> createState() =>  Home();
+}
+
+class Home extends State<MyHomePage1>{
+  List<UserModel> list = [];
+  Future<void> getUserList() async {
+    list.addAll(await Repository().getUser(1));
+    setState(() {
+      list;
+    });
+
+  }
+
+
+  @override
+  void initState() {
+    getUserList();
+    super.initState();
+  }
+  @override
+  Widget build(BuildContext context) {
+
+   return Scaffold(
+       backgroundColor: Colors.black,
+       appBar: AppBar(
+         title: const Text("Users List"),
+       ),
+       body: ListView.builder(
+           itemCount: list.length,
+           itemBuilder: (_, index) {
+             return Padding(
+               padding: const EdgeInsets.symmetric(horizontal: 10),
+               child: InkWell(
+                 onTap: () {
+                   Navigator.of(context).push(
+                     MaterialPageRoute(
+                       builder: (context) =>
+                           DetailsPage(id: list[index].id!),
+                     ),
+                   );
+                 },
+                 child: Card(
+                   color: Colors.white10,
+                   elevation: 4,
+                   margin:  const EdgeInsets.symmetric(vertical: 5),
+                   child: ListTile(
+                     title: Text(
+                       "${list[index].firstName} ${list[index].lastName}",
+                       style: const TextStyle(color: Colors.white),
+                     ),
+                     subtitle: Text(
+                       list[index].email!,
+                       style: const TextStyle(color: Colors.white),
+                     ),
+                     trailing: CircleAvatar(
+                       radius: 30,
+                       backgroundImage:
+                       NetworkImage(list[index].avatar!),
+                     ),
+                   ),
+                 ),
+               ),
+             );
+           }));
+  }
+}
+
+
 
 
